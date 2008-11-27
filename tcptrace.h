@@ -91,6 +91,7 @@ static char const GCC_UNUSED rcsid_tcptrace[] =
 #include <netinet/if_ether.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
+#include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <netdb.h>
 #include <ctype.h>
@@ -808,7 +809,7 @@ void plotter_nothing(PLOTTER, timeval);
 void plotter_invisible(PLOTTER, timeval, u_long);
 void plotter_switch_axis(PLOTTER, Bool);
 void plot_init(void);
-tcp_pair *dotrace(struct ip *, struct tcphdr *ptcp, void *plast);
+tcp_pair *dotrace(struct ip *, struct tcphdr *ptcp, void *plast, Bool createUnlessFound);
 void PrintRawData(char *label, void *pfirst, void *plast, Bool octal);
 void PrintRawDataHex(char *label, void *pfirst, void *plast);
 void PrintTrace(tcp_pair *);

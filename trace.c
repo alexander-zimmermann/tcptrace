@@ -85,7 +85,7 @@ u_long tcp_trace_count = 0;
 
 /* local routine definitions */
 static tcp_pair *NewTTP(struct ip *, struct tcphdr *);
-static tcp_pair *FindTTP(struct ip *, struct tcphdr *, int *, ptp_ptr **);
+static tcp_pair *FindTTP(struct ip *, struct tcphdr *, int *, ptp_ptr **, Bool createUnlessFound);
 static void MoreTcpPairs(int num_needed);
 static void ExtractContents(u_long seq, u_long tcp_data_bytes,
 			    u_long saved_data_bytes, void *pdata, tcb *ptcb);
@@ -759,7 +759,7 @@ FindTTP(
     struct ip *pip,
     struct tcphdr *ptcp,
     int *pdir,
-    ptp_ptr **tcp_ptr)
+    ptp_ptr **tcp_ptr, Bool createUnlessFound)
 {
     ptp_snap **pptph_head = NULL;
     ptp_snap *ptph;
@@ -942,7 +942,8 @@ FindTTP(
 	    }
 	}
     }
-   
+  
+    if (!createUnlessFound) return NULL;
    
     /* Didn't find it, make a new one, if possible */
     if (0) {
@@ -1350,7 +1351,7 @@ tcp_pair *
 dotrace(
     struct ip *pip,
     struct tcphdr *ptcp,
-    void *plast)
+    void *plast, Bool icmp)
 {
     struct tcp_options *ptcpo;
     tcp_pair	*ptp_save;
@@ -1407,14 +1408,16 @@ dotrace(
     ip_len   = gethdrlength(pip, plast) + getpayloadlength(pip,plast);
 
     /* make sure this is one of the connections we want */
-    ptp_save = FindTTP(pip,ptcp,&dir, &tcp_ptr);
+    ptp_save = FindTTP(pip,ptcp,&dir, &tcp_ptr, !icmp);
 
-    ++tcp_packet_count;
+    if (!icmp) tcp_packet_count++;
 
     if (ptp_save == NULL) {
 	return(NULL);
-    }
+    };
 
+   if (!icmp)
+   {
     ++tcp_trace_count;
 
     if (run_continuously && (tcp_ptr == NULL)) {
@@ -1427,7 +1430,7 @@ dotrace(
 	ptp_save->first_time = current_time;
     }
     ptp_save->last_time = current_time;
-
+  };
 
     /* bug fix:  it's legal to have the same end points reused.  The */
     /* program uses a heuristic of looking at the elapsed time from */
@@ -1444,6 +1447,17 @@ dotrace(
 	otherdir = &ptp_save->a2b;
     }
 
+/* calculate data length */
+    tcp_length = getpayloadlength(pip, plast);
+    tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
+
+    /* calc. data range */
+    start = th_seq;
+    end = start + tcp_data_length;
+
+
+    if (icmp) goto DRAW_PACKET;
+
     /* meta connection stats */
     if (SYN_SET(ptcp))
 	++thisdir->syn_count;
@@ -1453,6 +1467,7 @@ dotrace(
 	++thisdir->fin_count;
 
     /* end bug fix */
+
 
 
     /* compute the "effective window", which is the advertised window */
@@ -1482,14 +1497,6 @@ dotrace(
     }
     thisdir->last_time = current_time;
     
-
-    /* calculate data length */
-    tcp_length = getpayloadlength(pip, plast);
-    tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
-
-    /* calc. data range */
-    start = th_seq;
-    end = start + tcp_data_length;
 
     /* seq. space wrap around stats */
     /* If all four quadrants have been visited and the current packet
@@ -1880,11 +1887,20 @@ dotrace(
 			  "b", "P");
 	 }
      }
-
     /* draw the packet */
+    DRAW_PACKET:
+    from_tsgpl = thisdir->tsg_plotter;
     if (from_tsgpl != NO_PLOTTER) {
 	plotter_perm_color(from_tsgpl, data_color);
-	if (SYN_SET(ptcp)) {		/* SYN  */
+
+	if (icmp)
+	{
+	    plotter_perm_color(from_tsgpl,urg_color);
+	    plotter_diamond(from_tsgpl, current_time, SeqRep(thisdir,start));
+	    return NULL;
+	
+	}
+	else if (SYN_SET(ptcp)) {		/* SYN  */
 	    /* if we're using time offsets from zero, it's easier if */
 	    /* both graphs (a2b and b2a) start at the same point.  That */
 	    /* will only happen if the "left-most" graphic is in the */

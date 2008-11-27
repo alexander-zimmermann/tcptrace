@@ -1146,6 +1146,36 @@ for other packet types, I just don't have a place to test them\n\n");
 	    } else if (ret < 0) {
 		/* neither UDP not TCP */
 		ModulesPerNonTCPUDP(pip,plast);
+
+		//ICMP Code
+		
+		if (pip->ip_p == IPPROTO_ICMP) 
+		{
+			printf("ICMP Packet: ");
+			struct icmphdr *icmphdr = (struct icmphdr*) ((char*)pip + 4*pip->ip_hl);
+			if (icmphdr->type == ICMP_DEST_UNREACH && (icmphdr->code == ICMP_NET_UNREACH || icmphdr->code == ICMP_HOST_UNREACH))
+			{ 
+				printf("%s unreachable\n", icmphdr->code == ICMP_NET_UNREACH ? "network" : "host");
+				struct ip *iphdr = (struct ip*) (icmphdr+1);
+				printf("\ttransport protocol: ");
+				if (iphdr->ip_p == IPPROTO_TCP)
+				{
+					printf("TCP");
+					struct tcphdr *tcphdr = (struct tcphdr*) ((char*)iphdr + 4*iphdr->ip_hl);
+					dotrace(iphdr, tcphdr,  (char*)iphdr + ntohs(iphdr->ip_len), TRUE);
+				} else
+				{
+					printf("unknown");
+				}
+			} else
+			{
+				printf("unknown: type %d, code %d", icmphdr->type, icmphdr->code);
+			}
+			printf("\n");
+
+		}
+
+
 	    }
 	    continue;
 	}
@@ -1164,7 +1194,7 @@ for other packet types, I just don't have a place to test them\n\n");
 	}
 		       
         /* perform TCP packet analysis */
-	ptp = dotrace(pip,ptcp,plast);
+	ptp = dotrace(pip,ptcp,plast, FALSE);
 
 	/* if it wasn't "interesting", we return NULL here */
 	if (ptp == NULL)
