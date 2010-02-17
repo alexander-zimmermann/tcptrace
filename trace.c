@@ -122,28 +122,26 @@ int thru_interval = 10;	/* in segments */
 /* what colors to use */
 /* choose from: "green" "red" "blue" "yellow" "purple" "orange"
    "magenta" "pink" */
-char *window_color	= "yellow";
-char *ack_color		= "green";
-char *sack_color	= "purple";
-char *data_color	= "white";
-char *retrans_color	= "red";
-char *hw_dup_color	= "blue";
-char *out_order_color	= "pink";
-char *text_color	= "magenta";
-char *default_color	= "white";
-char *synfin_color	= "orange";
-char *push_color	= "white";	/* top arrow for PUSHed segments */
-char *ecn_color		= "yellow";
-char *urg_color		= "red";
-char *probe_color       = "orange";
-char *a2b_seg_color     = "green";     /* colors for segments on the time line chart */
-char *b2a_seg_color     = "yellow"; 
+char *window_color	= "window";
+char *ack_color		= "ack";
+char *sack_color	= "sack";
+char *data_color	= "data";
+char *retrans_color	= "retransmit";
+char *hw_dup_color	= "duplicate";
+char *out_order_color	= "reorder";
+char *text_color	= "text";
+char *default_color	= "default";
+char *synfin_color	= "sinfin";
+char *push_color	= "push";	/* top arrow for PUSHed segments */
+char *ecn_color		= "ecn";
+char *urg_color		= "urgent";
+char *probe_color	= "probe";
+char *a2b_seg_color	= "a2bseg";     /* colors for segments on the time line chart */
+char *b2a_seg_color	= "b2aseg"; 
 			    
-
 /* ack diamond dongle colors */
-char *ackdongle_nosample_color	= "blue";
-char *ackdongle_ambig_color	= "red";
-
+char *ackdongle_nosample_color	= "nosampleack";
+char *ackdongle_ambig_color	= "ambigousack";
 
 
 /* 

@@ -135,7 +135,7 @@ typedef long int llong;
 /* plotter information */
 typedef int PLOTTER;
 #define NO_PLOTTER -1
-#define NCOLORS 8
+#define NCOLORS 18
 extern char *ColorNames[NCOLORS];
 /* {"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"}; */
 typedef struct pl_line *PLINE;
