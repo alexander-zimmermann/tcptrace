@@ -168,7 +168,8 @@ char *sv = NULL;
 struct timeval current_time;
 int num_modules = 0;
 char *ColorNames[NCOLORS] =
-{"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"};
+{"window", "ack", "sack", "data", "retransmit", "duplicate", "reorder", "text", "default", "sinfin", "push", "ecn", "urgent", "probe", "a2bseg", "b2aseg", "nosampleack", "ambigousack"};
+
 char *comment;
 
 /* locally global variables */
