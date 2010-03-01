@@ -2294,7 +2294,7 @@ dotrace(
 		if (show_triple_dupack && (ack_type == TRIPLE)) {
 		    plotter_text(to_tsgpl, current_time,
 				 SeqRep(otherdir,ack),
-				 "a", "3");  /* '3' is for triple dupack */
+				 "a", "3DUPACK");  /* '3' is for triple dupack */
 		}
 	    }
 
