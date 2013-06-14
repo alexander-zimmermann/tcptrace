@@ -1,0 +1,7 @@
+--- tcptrace-6.6.7.orig/Makefile
++++ tcptrace-6.6.7/Makefile
+@@ -0,0 +1,4 @@
++default: 
++	@echo 
++	@echo "Please run ./configure first"
++	@echo 
