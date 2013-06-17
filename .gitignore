@@ -1,2 +1,7 @@
 Makefile
 config.status
+filt_parser.c
+filt_parser.h
+filt_scanner.c
+tcptrace
+versnum
