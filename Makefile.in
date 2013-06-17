@@ -130,7 +130,7 @@ DEFINES += -DGROK_ERF
 ################################################################## 
 # Pathname of directory to install the binary
 BINDIR = /usr/local/bin
-MANDIR = /usr/local/man/
+MANDIR = /usr/local/man
 
 
 ################################################################## 
@@ -275,9 +275,6 @@ bigtarfile:
 #
 # just a quick installation rule
 INSTALL = ./install-sh -c
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-INSTALL += -s
-endif
 install: tcptrace install-man
 	$(INSTALL) -m 755 -o bin -g bin tcptrace ${BINDIR}/tcptrace
 install-man: 
